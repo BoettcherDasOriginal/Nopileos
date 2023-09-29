@@ -5,7 +5,6 @@ use std::path::PathBuf;
 use ::egui::FontDefinitions;
 use egui_wgpu_backend::{RenderPass, ScreenDescriptor};
 use egui_winit_platform::{Platform, PlatformDescriptor};
-use super::event_handler::EventHandler;
 use super::gui_windows::GUIInterface;
 use winit::event::Event::*;
 use winit::event_loop::ControlFlow;
@@ -30,13 +29,13 @@ impl epi::backend::RepaintSignal for ExampleRepaintSignal {
 }
 
 /// A simple egui + wgpu + winit based example.
-pub async fn run(mut event_handler: EventHandler) {
+pub async fn run(mut game_win: impl GameWindow + 'static) {
     let event_loop = winit::event_loop::EventLoopBuilder::<Event>::with_user_event().build();
     let window = winit::window::WindowBuilder::new()
         .with_decorations(true)
         .with_resizable(true)
         .with_transparent(false)
-        .with_title("Evolving Circuitry")
+        .with_title("Nopileos")
         .with_inner_size(winit::dpi::PhysicalSize {
             width: INITIAL_WIDTH,
             height: INITIAL_HEIGHT,
@@ -98,6 +97,7 @@ pub async fn run(mut event_handler: EventHandler) {
 
     let mut gui_app = GuiWindows::default();
 
+    let mut first_frame = true;
 
     let start_time = Instant::now();
     event_loop.run(move |event, _, control_flow| {
@@ -130,12 +130,12 @@ pub async fn run(mut event_handler: EventHandler) {
 
                 //Call FrameUpdate Callback
                 let mut guii = GUIInterface::default();
-                if event_handler.first_frame {
-                    guii = event_handler.start(guii);
-                    event_handler.first_frame = false;
+                if first_frame {
+                    guii = game_win.start(guii);
+                    first_frame = false;
                 }
                 else {
-                    guii = event_handler.update(guii);
+                    guii = game_win.update(guii);
                 }
 
                 // Draw the gui application.
@@ -203,7 +203,7 @@ pub async fn run(mut event_handler: EventHandler) {
                     }
                 }
                 winit::event::WindowEvent::CloseRequested => {
-                    event_handler.end();
+                    game_win.end();
                     *control_flow = ControlFlow::Exit;
                 }
                 _ => {}
@@ -211,4 +211,18 @@ pub async fn run(mut event_handler: EventHandler) {
             _ => (),
         }
     });
+}
+
+pub trait GameWindow {
+    /*fn run(&self) {
+        let mut event_h = EventHandler::default();
+        event_h.set_events(Self::start_callback, Self::update_callback, Self::end);
+        pollster::block_on(run(event_h));
+    }*/
+
+    fn update(&mut self, guii: GUIInterface) -> GUIInterface;
+    
+    fn start(&mut self, guii: GUIInterface) -> GUIInterface;
+    
+    fn end(&mut self);
 }
