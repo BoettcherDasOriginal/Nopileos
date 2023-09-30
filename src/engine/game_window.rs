@@ -99,6 +99,8 @@ pub async fn run(mut game_win: impl GameWindow + 'static) {
 
     let mut first_frame = true;
 
+    let mut last_frame_time = Instant::now();
+
     let start_time = Instant::now();
     event_loop.run(move |event, _, control_flow| {
         // Pass the winit events to the platform integration.
@@ -107,6 +109,8 @@ pub async fn run(mut game_win: impl GameWindow + 'static) {
         match event {
             RedrawRequested(..) => {
                 platform.update_time(start_time.elapsed().as_secs_f64());
+                game_win.set_delta_time(last_frame_time.elapsed().as_secs_f64());
+                last_frame_time = Instant::now();
 
                 let output_frame = match surface.get_current_texture() {
                     Ok(frame) => frame,
@@ -214,11 +218,8 @@ pub async fn run(mut game_win: impl GameWindow + 'static) {
 }
 
 pub trait GameWindow {
-    /*fn run(&self) {
-        let mut event_h = EventHandler::default();
-        event_h.set_events(Self::start_callback, Self::update_callback, Self::end);
-        pollster::block_on(run(event_h));
-    }*/
+    fn delta_time(&mut self) -> f64;
+    fn set_delta_time(&mut self,dt: f64);
 
     fn update(&mut self, guii: GUIInterface) -> GUIInterface;
     
