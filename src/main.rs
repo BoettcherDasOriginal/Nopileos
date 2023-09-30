@@ -1,5 +1,9 @@
 mod engine;
 mod gui;
+mod entities;
+mod wares;
+mod common;
+mod position;
 
 use egui::Context;
 
@@ -26,21 +30,20 @@ impl SharedGameData {
 struct Nopileos {
     gui_app: GuiWindows,
     shared_game_data: SharedGameData,
-    delta_time: f64,
 }
 
 impl Default for Nopileos {
     fn default() -> Self {
-        Self { delta_time: 0.0, gui_app: GuiWindows::default(), shared_game_data: SharedGameData::new() } 
+        Self { gui_app: GuiWindows::default(), shared_game_data: SharedGameData::new() } 
     }
 }
 
 impl GameWindow for Nopileos {
     fn delta_time(&mut self) -> f64 {
-        return self.delta_time;
+        return self.shared_game_data.delta_time;
     }
     fn set_delta_time(&mut self,dt: f64) {
-        self.delta_time = dt;
+        self.shared_game_data.delta_time = dt;
     }
 
     fn gui_app(&mut self,ctx: &Context,guii: GUIInterface) {
@@ -60,7 +63,6 @@ impl GameWindow for Nopileos {
     }
 
     fn update(&mut self, guii: GUIInterface) -> GUIInterface{
-        self.shared_game_data.delta_time = self.delta_time;
         return guii;
     }
     

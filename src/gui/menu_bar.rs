@@ -20,7 +20,7 @@ impl GuiWindow for MenuBar {
         .min_height(25.0)
         .show(ctx, |ui| {
             ui.horizontal(|ui| {
-                ui.heading("NOPILEOS");
+                ui.heading("Nopileos");
 
                 egui::menu::bar(ui, |ui| {
                     use GuiView as _;
@@ -30,7 +30,7 @@ impl GuiWindow for MenuBar {
 
             });
 
-            ui.label(format!("delta_time:{}",data.delta_time))
+            ui.label(format!("delta_time: {:.1}ms",data.delta_time * 1000.0))
         });
 
         return data;
