@@ -4,6 +4,7 @@ mod entities;
 mod wares;
 mod common;
 mod position;
+mod galaxy;
 
 use egui::Context;
 
@@ -56,9 +57,11 @@ impl GameWindow for Nopileos {
             Box::new(gui::menu_bar::MenuBar::default()),
             //Windows
             Box::new(gui::about::About::default()),
+            Box::new(gui::sector_map::SectorMap::default()),
         ]);
         guii.open_guis.insert("menu_bar".to_string());
         guii.open_guis.insert("About".to_string());
+        guii.open_guis.insert("Sector Map".to_string());
         return guii;
     }
 

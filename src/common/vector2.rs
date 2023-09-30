@@ -2,8 +2,8 @@ use std::ops::{Add, Sub, Mul, Div};
 
 #[derive(Clone, Debug)]
 pub struct Vector2{
-    x: f64,
-    y: f64,
+    pub x: f64,
+    pub y: f64,
 }
 
 impl Add for Vector2 {
@@ -41,5 +41,9 @@ impl Div for Vector2 {
 impl Vector2{
     pub fn new(x: f64,y: f64) -> Self {
         Self { x: x, y: y }
+    }
+
+    pub fn as_slice(&mut self) -> [f64; 2] {
+        return [self.x,self.y];
     }
 }

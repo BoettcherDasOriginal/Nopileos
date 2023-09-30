@@ -6,17 +6,18 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-egui_wgpu_backend = "0.25"
+egui_wgpu_backend = { git = "https://github.com/BoettcherDasOriginal/egui_wgpu_backend.git" }
 chrono = "0.4"
 pollster = "0.2"
-egui = "0.22"
+egui = "0.23"
 epi = "0.17"
-egui_winit_platform = "0.19"
+egui_winit_platform = { git = "https://github.com/BoettcherDasOriginal/egui_winit_platform.git" }
 wgpu = "0.17"
 winit = { version="0.28", features = ["x11"]}
-egui_demo_lib = "0.22"
-egui_extras = "0.22"
+egui_demo_lib = "0.23"
+egui_extras = "0.23"
+egui_plot = "0.23"
 bytemuck = "1.13"
 copypasta = "0.8"
-epaint = "0.22.0"
+epaint = "0.23.0"
 open = "5"
