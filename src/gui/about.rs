@@ -1,5 +1,5 @@
 use open;
-use crate::engine::gui_windows::{GuiWindow,GuiView};
+use crate::{engine::gui_windows::{GuiWindow,GuiView}, SharedGameData};
 
 pub struct About {}
 
@@ -14,7 +14,7 @@ impl GuiWindow for About {
         "About"
     }
 
-    fn show(&mut self, ctx: &egui::Context, open: &mut bool) {
+    fn show(&mut self, ctx: &egui::Context, open: &mut bool,data: SharedGameData) -> SharedGameData{
         egui::Window::new(self.name())
             .default_width(320.0)
             .open(open)
@@ -22,6 +22,8 @@ impl GuiWindow for About {
                 use GuiView as _;
                 self.ui(ui);
             });
+
+        return data;
     }
 
     fn killed(&mut self) {

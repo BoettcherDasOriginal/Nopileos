@@ -1,5 +1,5 @@
 use egui::Modifiers;
-use crate::engine::gui_windows::{GuiWindow,GuiView};
+use crate::{engine::gui_windows::{GuiWindow,GuiView}, SharedGameData};
 use std::process;
 
 pub struct MenuBar {}
@@ -15,7 +15,7 @@ impl GuiWindow for MenuBar {
         "menu_bar"
     }
 
-    fn show(&mut self, ctx: &egui::Context, _open: &mut bool) {
+    fn show(&mut self, ctx: &egui::Context, _open: &mut bool,data: SharedGameData) -> SharedGameData{
         egui::TopBottomPanel::top("menu_bar")
         .min_height(25.0)
         .show(ctx, |ui| {
@@ -26,10 +26,14 @@ impl GuiWindow for MenuBar {
                     use GuiView as _;
                     self.ui(ui);
                 });
+
+
             });
 
-            
+            ui.label(format!("delta_time:{}",data.delta_time))
         });
+
+        return data;
     }
 
     fn killed(&mut self) {

@@ -3,6 +3,7 @@ use std::time::Instant;
 use std::path::PathBuf;
 
 use ::egui::FontDefinitions;
+use egui::Context;
 use egui_wgpu_backend::{RenderPass, ScreenDescriptor};
 use egui_winit_platform::{Platform, PlatformDescriptor};
 use super::gui_windows::GUIInterface;
@@ -10,8 +11,6 @@ use winit::event::Event::*;
 use winit::event_loop::ControlFlow;
 const INITIAL_WIDTH: u32 = 1920;
 const INITIAL_HEIGHT: u32 = 1080;
-
-use crate::engine::gui_windows::GuiWindows;
 
 /// A custom event type for the winit app.
 enum Event {
@@ -95,7 +94,7 @@ pub async fn run(mut game_win: impl GameWindow + 'static) {
     // We use the egui_wgpu_backend crate as the render backend.
     let mut egui_rpass = RenderPass::new(&device, surface_format, 1);
 
-    let mut gui_app = GuiWindows::default();
+    //let mut gui_app = GuiWindows::default();
 
     let mut first_frame = true;
 
@@ -143,7 +142,7 @@ pub async fn run(mut game_win: impl GameWindow + 'static) {
                 }
 
                 // Draw the gui application.
-                gui_app.ui(&platform.context(),guii);
+                game_win.gui_app(&platform.context(),guii);
 
                 // End the UI frame. We could now handle the output and draw the UI with the backend.
                 let full_output = platform.end_frame(Some(&window));
@@ -220,6 +219,8 @@ pub async fn run(mut game_win: impl GameWindow + 'static) {
 pub trait GameWindow {
     fn delta_time(&mut self) -> f64;
     fn set_delta_time(&mut self,dt: f64);
+
+    fn gui_app(&mut self,ctx: &Context,guii: GUIInterface);
 
     fn update(&mut self, guii: GUIInterface) -> GUIInterface;
     

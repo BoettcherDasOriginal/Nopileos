@@ -6,12 +6,14 @@ use egui::FontData;
 use std::collections::BTreeSet;
 use egui::epaint::FontFamily;
 
+use crate::SharedGameData;
+
 pub trait GuiWindow {
     /// `&'static` so we can also use it as a key to store open/close state.
     fn name(&self) -> &'static str;
 
     /// Show windows, etc
-    fn show(&mut self, ctx: &egui::Context, open: &mut bool);
+    fn show(&mut self, ctx: &egui::Context, open: &mut bool,data: SharedGameData) -> SharedGameData;
 
     // Kill callback
     fn killed(&mut self);
@@ -22,8 +24,8 @@ pub trait GuiView {
 }
 
 pub struct GuiWindows {
-    guis: Vec<Box<dyn GuiWindow>>,
-    open: BTreeSet<String>,
+    pub guis: Vec<Box<dyn GuiWindow>>,
+    pub open: BTreeSet<String>,
 }
 
 impl Default for GuiWindows {
@@ -41,19 +43,23 @@ impl GuiWindows {
         Self { guis, open }
     }
 
-    pub fn windows(&mut self, ctx: &Context) {
+    pub fn windows(&mut self, ctx: &Context,mut data: SharedGameData) -> SharedGameData {
         let Self { guis, open } = self;
         for gui in guis {
             let mut is_open = open.contains(gui.name());
-            gui.show(ctx, &mut is_open);
+            data = gui.show(ctx, &mut is_open,data);
             set_open(open, gui.name(), is_open);
         }
+
+        return data;
     }
 
-    pub fn ui(&mut self, ctx: &Context,guii: GUIInterface){
+    pub fn ui(&mut self, ctx: &Context,guii: GUIInterface,mut data: SharedGameData) -> SharedGameData{
         self.style(ctx);
-        self.windows(ctx);
+        data = self.windows(ctx,data);
         self.interface(guii);
+
+        return data;
     }
 
     pub fn interface(&mut self,mut guii: GUIInterface){
