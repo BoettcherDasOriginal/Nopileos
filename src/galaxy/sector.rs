@@ -1,7 +1,7 @@
 use crate::entities::entity::Entity;
 use epaint::Color32;
 
-
+#[derive(Clone)]
 pub struct Sector{
     pub name: String,
     pub star_name: String,

@@ -1,17 +1,19 @@
 use egui_plot::{Line, Plot, PlotPoints,LineStyle,Polygon, PlotBounds};
 use egui::{Color32,remap};
-use std::f64::consts::TAU;
+use std::{f64::consts::TAU, collections::BTreeMap};
 
-use crate::{engine::gui_windows::{GuiWindow,GuiView}, SharedGameData, common::vector2::Vector2, galaxy::sector::Sector};
+use crate::{engine::gui_windows::{GuiWindow,GuiView}, SharedGameData, common::{vector2::Vector2,triangle::Triangle}, galaxy::sector::Sector, entities::entity::{EntityType, EntitySettings, EntityWareStorage}, position::Position};
 
 pub struct SectorMap {
-    first_zoom: bool,
     sector: Sector,
+    shared_data: SharedGameData,
 }
 
 impl Default for SectorMap {
     fn default() -> Self {
-        Self { first_zoom: false, sector: Sector::new("Test".to_string(), "Test (HXC-102)".to_string(), 5.0, Color32::LIGHT_YELLOW, Color32::LIGHT_BLUE, vec![])}
+        let ship = crate::entities::ship::Ship::new(EntitySettings::new("Gox".to_string(), "HXI-739".to_string(), false, "owner".to_string(), EntityType::Ship), crate::entities::ship::ShipType::SFighter, EntityWareStorage::new(BTreeMap::new(), 100.0), Position::new("???".to_string(), Vector2::new(100.0, 33.5)));
+
+        Self { sector: Sector::new("Isaeuma Tlo'nep".to_string(), "Isaeuma IV".to_string(), 5.0, Color32::LIGHT_YELLOW, Color32::LIGHT_BLUE, vec![Box::new(ship)]), shared_data: SharedGameData::new() }
     }
 }
 
@@ -21,6 +23,8 @@ impl GuiWindow for SectorMap {
     }
 
     fn show(&mut self, ctx: &egui::Context, open: &mut bool,data: SharedGameData) -> SharedGameData{
+        self.shared_data = data;
+        
         egui::Window::new(self.name())
             .default_width(320.0)
             .open(open)
@@ -29,7 +33,7 @@ impl GuiWindow for SectorMap {
                 self.ui(ui);
             });
 
-        return data;
+        return self.shared_data.clone();
     }
 
     fn killed(&mut self) {
@@ -41,7 +45,11 @@ impl GuiView for SectorMap {
     fn ui(&mut self, ui: &mut egui::Ui) {
         let scroll_delta = ui.input(|i| i.scroll_delta);
 
-        let markers_plot = Plot::new("sector_map")
+        ui.horizontal(|ui| {
+            ui.heading(self.sector.name.to_string());
+        });
+
+        let sector_map_plot = Plot::new("sector_map")
             .width(600.0)
             .height(600.0)
             .show_axes(false)
@@ -49,7 +57,7 @@ impl GuiView for SectorMap {
             .allow_zoom(false)
             .data_aspect(1.0);
 
-        markers_plot
+        sector_map_plot
             .show(ui, |plot_ui| {
                 //Draw Star
                 plot_ui.polygon(
@@ -94,18 +102,21 @@ impl GuiView for SectorMap {
                 );
 
                 //Draw Entities
-                let points = PlotPoints::new(vec![
-                    [0.0, 0.0],
-                    [2.0, 0.0],
-                    [1.0, 2.0],
-                    [0.0, 0.0],
-                ]);
-                let planned_line = Polygon::new(points)
-                    .fill_color(Color32::from_rgb(100, 200, 100))
-                    .style(LineStyle::Solid)
-                    .width(0.1)
-                    .name("GOX-101");
-                plot_ui.polygon(planned_line);
+
+                for mut e in self.sector.entities.clone() {
+                    match e.get_settings().clone().e_type {
+                        EntityType::Ship => {
+                            plot_ui.polygon({
+                                Polygon::new(PlotPoints::new(Triangle::new(e.get_position().local_pos, 5.0, 0).get_points()))
+                                    .fill_color(Color32::BLUE)
+                                    .style(LineStyle::Solid)
+                                    .width(0.1)
+                                    .name(e.get_settings().name)
+                            })
+                        }
+                        EntityType::Station => todo!()
+                    }
+                }
 
                 // ------------------
                 // Custom Zoom

@@ -41,7 +41,7 @@ impl Entity for Ship {
 }
 
 impl Ship {
-    fn new(settings: EntitySettings,ship_type: ShipType,storage: EntityWareStorage,position: Position) -> Self{
+    pub fn new(settings: EntitySettings,ship_type: ShipType,storage: EntityWareStorage,position: Position) -> Self{
         Self { settings: settings, ship_type: ship_type, storage: storage, position: position }
     }
 

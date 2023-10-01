@@ -2,8 +2,8 @@ use crate::common::vector2::Vector2;
 
 #[derive(Clone, Debug)]
 pub struct Position{
-    global_pos: String,
-    local_pos: Vector2,
+    pub global_pos: String,
+    pub local_pos: Vector2,
 }
 
 impl Position {

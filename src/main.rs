@@ -6,25 +6,28 @@ mod common;
 mod position;
 mod galaxy;
 
-use egui::Context;
+use egui::{Context,Color32};
 
 use crate::engine::game_window::run;
 use crate::engine::gui_windows::GUIInterface;
 use crate::engine::game_window::GameWindow;
 use crate::engine::gui_windows::GuiWindows;
 
+use crate::galaxy::sector::Sector;
+
 fn main() {
     pollster::block_on(run(Nopileos::default()));
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone)]
 pub struct SharedGameData {
     delta_time: f64,
+    sectors: Vec<Sector>,
 }
 
 impl SharedGameData {
     pub fn new() -> Self{
-        Self { delta_time: 0.0 }
+        Self { delta_time: 0.0,sectors: vec![] }
     }
 }
 
@@ -52,6 +55,8 @@ impl GameWindow for Nopileos {
     }
 
     fn start(&mut self, mut guii: GUIInterface) -> GUIInterface {
+        self.shared_game_data.sectors.append(& mut vec![Sector::new("Isaeuma Tlo'nep".to_string(), "Isaeuma IV".to_string(), 5.0, Color32::LIGHT_YELLOW, Color32::LIGHT_BLUE, vec![])]);
+
         guii.add_guis.append(&mut vec![
             //MenuBars, etc -> must be before windows so they can't go on top
             Box::new(gui::menu_bar::MenuBar::default()),
