@@ -120,7 +120,7 @@ impl GuiView for SectorMap {
 
                 //Draw Entities
 
-                for mut e in self.shared_data.entities.clone() {
+                for mut e in self.shared_data.entities[self.selected_sector.clone() as usize].clone() {
                     if e.get_position().global_pos == self.selected_sector {
                         match e.get_settings().clone().e_type {
                             EntityType::Ship => {
@@ -191,7 +191,7 @@ impl GuiView for SectorMap {
                 if plot_ui.response().secondary_clicked(){
                     let mouse_pos = Vector2::new(plot_ui.pointer_coordinate().unwrap().x, plot_ui.pointer_coordinate().unwrap().y);
 
-                    for mut e in self.shared_data.entities.clone() {
+                    for mut e in self.shared_data.entities[self.selected_sector.clone() as usize].clone() {
                         if e.get_position().global_pos == self.selected_sector {
                             if e.is_mouse_hovered(mouse_pos.clone(), 3.0) {
                                 println!("{}",e.get_settings().name)

@@ -26,7 +26,7 @@ fn main() {
 pub struct SharedGameData {
     delta_time: f64,
     sectors: Vec<Sector>,
-    entities: Vec<Box<dyn Entity>>,
+    entities: Vec<Vec<Box<dyn Entity>>>, // entities[sector_id] -> Vec<Box<dyn Entity>> in the given sector
 }
 
 impl SharedGameData {
@@ -65,7 +65,10 @@ impl GameWindow for Nopileos {
     fn start(&mut self, mut guii: GUIInterface) -> GUIInterface {
         let ship = crate::entities::ship::Ship::new(EntitySettings::new("Gox".to_string(), "HXI-739".to_string(), false, "owner".to_string(), EntityType::Ship), crate::entities::ship::ShipType::SFighter, EntityWareStorage::new(BTreeMap::new(), 100.0), Position::new(0, Vector2::new(87.3345, 33.5)));
         let station = crate::entities::station::Station::new(EntitySettings::new("Handelsstation".to_string(), "TLO-101".to_string(), false, "owner".to_string(), EntityType::Station), crate::entities::station::StationType::Station, EntityWareStorage::new(BTreeMap::new(), 100.0), Position::new(0, Vector2::new(100.0, 200.0)));
-        self.shared_game_data.entities.append(&mut vec![Box::new(ship),Box::new(station)]);
+        self.shared_game_data.entities.append(&mut vec![
+            vec![Box::new(ship),Box::new(station)],
+            vec![],
+        ]);
 
         self.shared_game_data.sectors.append(& mut vec![Sector::new("Isaeuma Tlo'nep".to_string(),0, "Isaeuma IV".to_string(), 5.0, Color32::LIGHT_YELLOW, Color32::LIGHT_BLUE)]);
         self.shared_game_data.sectors.append(& mut vec![Sector::new("Isaeuma".to_string(),1, "Isaeuma I".to_string(), 15.0, Color32::LIGHT_RED, Color32::LIGHT_BLUE)]);
