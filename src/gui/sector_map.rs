@@ -5,15 +5,18 @@ use std::{f64::consts::TAU, collections::BTreeMap};
 use crate::{engine::gui_windows::{GuiWindow,GuiView}, SharedGameData, common::{vector2::Vector2,triangle::Triangle}, galaxy::sector::Sector, entities::entity::{EntityType, EntitySettings, EntityWareStorage}, position::Position};
 
 pub struct SectorMap {
-    sector: Sector,
+    sector : Sector,
+    selected_sector: i32,
     shared_data: SharedGameData,
 }
 
 impl Default for SectorMap {
     fn default() -> Self {
-        let ship = crate::entities::ship::Ship::new(EntitySettings::new("Gox".to_string(), "HXI-739".to_string(), false, "owner".to_string(), EntityType::Ship), crate::entities::ship::ShipType::SFighter, EntityWareStorage::new(BTreeMap::new(), 100.0), Position::new("???".to_string(), Vector2::new(100.0, 33.5)));
-
-        Self { sector: Sector::new("Isaeuma Tlo'nep".to_string(), "Isaeuma IV".to_string(), 5.0, Color32::LIGHT_YELLOW, Color32::LIGHT_BLUE, vec![Box::new(ship)]), shared_data: SharedGameData::new() }
+        Self { 
+            sector: Sector::new("???".to_string(), "???".to_string(), 5.0, Color32::LIGHT_YELLOW, Color32::LIGHT_BLUE, vec![]),
+            selected_sector: 0,
+            shared_data: SharedGameData::new() 
+        }
     }
 }
 
@@ -24,6 +27,7 @@ impl GuiWindow for SectorMap {
 
     fn show(&mut self, ctx: &egui::Context, open: &mut bool,data: SharedGameData) -> SharedGameData{
         self.shared_data = data;
+        self.sector = self.shared_data.sectors.get(0).unwrap().clone();
         
         egui::Window::new(self.name())
             .default_width(320.0)
@@ -55,6 +59,7 @@ impl GuiView for SectorMap {
             .show_axes(false)
             .allow_scroll(false)
             .allow_zoom(false)
+            .allow_boxed_zoom(false)
             .data_aspect(1.0);
 
         sector_map_plot
@@ -107,7 +112,7 @@ impl GuiView for SectorMap {
                     match e.get_settings().clone().e_type {
                         EntityType::Ship => {
                             plot_ui.polygon({
-                                Polygon::new(PlotPoints::new(Triangle::new(e.get_position().local_pos, 5.0, 0).get_points()))
+                                Polygon::new(PlotPoints::new(Triangle::new(e.get_position().local_pos, 1.0, 0).get_points()))
                                     .fill_color(Color32::BLUE)
                                     .style(LineStyle::Solid)
                                     .width(0.1)

@@ -6,12 +6,16 @@ mod common;
 mod position;
 mod galaxy;
 
+use std::collections::BTreeMap;
+
 use egui::{Context,Color32};
 
 use crate::engine::game_window::run;
 use crate::engine::gui_windows::GUIInterface;
 use crate::engine::game_window::GameWindow;
 use crate::engine::gui_windows::GuiWindows;
+
+use crate::{entities::entity::{EntityType, EntitySettings, EntityWareStorage}, position::Position, common::vector2::Vector2};
 
 use crate::galaxy::sector::Sector;
 
@@ -27,7 +31,10 @@ pub struct SharedGameData {
 
 impl SharedGameData {
     pub fn new() -> Self{
-        Self { delta_time: 0.0,sectors: vec![] }
+        Self { 
+            delta_time: 0.0,
+            sectors: vec![] 
+        }
     }
 }
 
@@ -55,7 +62,8 @@ impl GameWindow for Nopileos {
     }
 
     fn start(&mut self, mut guii: GUIInterface) -> GUIInterface {
-        self.shared_game_data.sectors.append(& mut vec![Sector::new("Isaeuma Tlo'nep".to_string(), "Isaeuma IV".to_string(), 5.0, Color32::LIGHT_YELLOW, Color32::LIGHT_BLUE, vec![])]);
+        let ship = crate::entities::ship::Ship::new(EntitySettings::new("Gox".to_string(), "HXI-739".to_string(), false, "owner".to_string(), EntityType::Ship), crate::entities::ship::ShipType::SFighter, EntityWareStorage::new(BTreeMap::new(), 100.0), Position::new("???".to_string(), Vector2::new(100.0, 33.5)));
+        self.shared_game_data.sectors.append(& mut vec![Sector::new("Isaeuma Tlo'nep".to_string(), "Isaeuma IV".to_string(), 5.0, Color32::LIGHT_YELLOW, Color32::LIGHT_BLUE, vec![Box::new(ship)])]);
 
         guii.add_guis.append(&mut vec![
             //MenuBars, etc -> must be before windows so they can't go on top
