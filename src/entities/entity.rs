@@ -1,5 +1,6 @@
 use std::collections::BTreeMap;
 
+use crate::common::vector2::Vector2;
 use crate::wares::wares::Ware;
 use crate::position::Position;
 
@@ -15,6 +16,14 @@ pub trait Entity: EntityClone {
     fn set_storage(&mut self,storage: EntityWareStorage) -> bool;
     fn get_position(&mut self) -> Position;
     fn set_position(&mut self,pos: Position);
+
+    fn is_mouse_hovered(&mut self,mouse_pos: Vector2,radius: f64) -> bool{
+        let min = self.get_position().local_pos - Vector2::new(radius, radius);
+        let max = self.get_position().local_pos + Vector2::new(radius, radius);
+
+        min.x < mouse_pos.x && max.x > mouse_pos.x &&
+        min.y < mouse_pos.y && max.y > mouse_pos.y
+    }
 }
 
 #[derive(Clone, Debug)]
@@ -46,7 +55,7 @@ impl EntityWareStorage {
 
 //Cloning
 
-trait EntityClone {
+pub trait EntityClone {
     fn clone_box(&self) -> Box<dyn Entity>;
 }
 

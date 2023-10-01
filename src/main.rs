@@ -9,15 +9,14 @@ mod galaxy;
 use std::collections::BTreeMap;
 
 use egui::{Context,Color32};
+use entities::entity::Entity;
 
 use crate::engine::game_window::run;
 use crate::engine::gui_windows::GUIInterface;
 use crate::engine::game_window::GameWindow;
 use crate::engine::gui_windows::GuiWindows;
 
-use crate::{entities::entity::{EntityType, EntitySettings, EntityWareStorage}, position::Position, common::vector2::Vector2};
-
-use crate::galaxy::sector::Sector;
+use crate::{entities::entity::{EntityType, EntitySettings, EntityWareStorage},galaxy::sector::Sector, position::Position, common::vector2::Vector2};
 
 fn main() {
     pollster::block_on(run(Nopileos::default()));
@@ -27,13 +26,15 @@ fn main() {
 pub struct SharedGameData {
     delta_time: f64,
     sectors: Vec<Sector>,
+    entities: Vec<Box<dyn Entity>>,
 }
 
 impl SharedGameData {
     pub fn new() -> Self{
         Self { 
             delta_time: 0.0,
-            sectors: vec![] 
+            sectors: vec![],
+            entities: vec![]
         }
     }
 }
@@ -62,8 +63,12 @@ impl GameWindow for Nopileos {
     }
 
     fn start(&mut self, mut guii: GUIInterface) -> GUIInterface {
-        let ship = crate::entities::ship::Ship::new(EntitySettings::new("Gox".to_string(), "HXI-739".to_string(), false, "owner".to_string(), EntityType::Ship), crate::entities::ship::ShipType::SFighter, EntityWareStorage::new(BTreeMap::new(), 100.0), Position::new("???".to_string(), Vector2::new(100.0, 33.5)));
-        self.shared_game_data.sectors.append(& mut vec![Sector::new("Isaeuma Tlo'nep".to_string(), "Isaeuma IV".to_string(), 5.0, Color32::LIGHT_YELLOW, Color32::LIGHT_BLUE, vec![Box::new(ship)])]);
+        let ship = crate::entities::ship::Ship::new(EntitySettings::new("Gox".to_string(), "HXI-739".to_string(), false, "owner".to_string(), EntityType::Ship), crate::entities::ship::ShipType::SFighter, EntityWareStorage::new(BTreeMap::new(), 100.0), Position::new(0, Vector2::new(87.3345, 33.5)));
+        let station = crate::entities::station::Station::new(EntitySettings::new("Handelsstation".to_string(), "TLO-101".to_string(), false, "owner".to_string(), EntityType::Station), crate::entities::station::StationType::Station, EntityWareStorage::new(BTreeMap::new(), 100.0), Position::new(0, Vector2::new(100.0, 200.0)));
+        self.shared_game_data.entities.append(&mut vec![Box::new(ship),Box::new(station)]);
+
+        self.shared_game_data.sectors.append(& mut vec![Sector::new("Isaeuma Tlo'nep".to_string(),0, "Isaeuma IV".to_string(), 5.0, Color32::LIGHT_YELLOW, Color32::LIGHT_BLUE)]);
+        self.shared_game_data.sectors.append(& mut vec![Sector::new("Isaeuma".to_string(),1, "Isaeuma I".to_string(), 15.0, Color32::LIGHT_RED, Color32::LIGHT_BLUE)]);
 
         guii.add_guis.append(&mut vec![
             //MenuBars, etc -> must be before windows so they can't go on top
