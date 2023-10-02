@@ -2,11 +2,13 @@ use egui::Modifiers;
 use crate::{engine::gui_windows::{GuiWindow,GuiView}, SharedGameData};
 use std::process;
 
-pub struct MenuBar {}
+pub struct MenuBar {
+    shared_data: SharedGameData,
+}
 
 impl Default for MenuBar {
     fn default() -> Self {
-        Self {  }
+        Self {  shared_data: SharedGameData::new() }
     }
 }
 
@@ -16,6 +18,8 @@ impl GuiWindow for MenuBar {
     }
 
     fn show(&mut self, ctx: &egui::Context, _open: &mut bool,data: SharedGameData) -> SharedGameData{
+        self.shared_data = data.clone();
+
         egui::TopBottomPanel::top("menu_bar")
         .min_height(25.0)
         .show(ctx, |ui| {
@@ -33,7 +37,7 @@ impl GuiWindow for MenuBar {
             ui.label(format!("delta_time: {:.1}ms",data.delta_time * 1000.0))
         });
 
-        return data;
+        return self.shared_data.clone();
     }
 
     fn killed(&mut self) {
@@ -86,6 +90,28 @@ impl GuiView for MenuBar {
             ui.menu_button("Exit", |ui| {
                 if ui.button("Exit").clicked(){
                     process::exit(0);
+                }
+            });
+
+            ui.menu_button("Windows", |ui| {
+                for gui in self.shared_data.gui_wins.clone() {
+                    let name = gui.0;
+                    if name.to_string() == "menu_bar" {
+                        return;
+                    }
+                    let mut is_open = gui.1;
+                    if !is_open {
+                        ui.toggle_value(&mut is_open, name.to_string()).clicked();
+                        if is_open {
+                            self.shared_data.gui_open_request.insert(name);
+                        }
+                    }
+                    else {
+                        ui.toggle_value(&mut is_open, name.to_string());
+                        if !is_open {
+                            self.shared_data.gui_close_request.insert(name);
+                        }
+                    }
                 }
             });
         });

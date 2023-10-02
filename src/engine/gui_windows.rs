@@ -69,6 +69,10 @@ impl GuiWindows {
             self.open.insert(str);
         }
 
+        for str in guii.close_guis{
+            self.open.remove(&str);
+        }
+
         for rm in guii.remove_guis{
             let i = self.guis.iter().position(|x| *x.name() == rm).unwrap();
             self.guis[i].killed();
@@ -120,16 +124,18 @@ fn set_open(open: &mut BTreeSet<String>, key: &'static str, is_open: bool) {
 pub struct GUIInterface{
     pub add_guis: Vec<Box<dyn GuiWindow>>,
     pub remove_guis: BTreeSet<String>,
+    pub close_guis: BTreeSet<String>,
     pub open_guis: BTreeSet<String>,
 }
 
 impl Default for GUIInterface {
     fn default() -> Self {
         let open = BTreeSet::new();
+        let close = BTreeSet::new();
         let remove = BTreeSet::new();
         let add = vec![];
 
-        Self { add_guis: add, remove_guis: remove, open_guis: open }
+        Self { add_guis: add, remove_guis: remove, close_guis: close, open_guis: open }
     }
 }
 

@@ -6,7 +6,7 @@ mod common;
 mod position;
 mod galaxy;
 
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, BTreeSet};
 
 use egui::{Context,Color32};
 use entities::command::{EntityCommandHandler, EntityCommand};
@@ -27,6 +27,9 @@ fn main() {
 #[derive(Clone)]
 pub struct SharedGameData {
     delta_time: f64,
+    gui_wins: BTreeMap<String,bool>,
+    gui_open_request: BTreeSet<String>,
+    gui_close_request: BTreeSet<String>,
     sectors: Vec<Sector>,
     entities: Vec<Vec<Box<dyn Entity>>>, // entities[sector_id] -> Vec<Box<dyn Entity>> in the given sector
 }
@@ -35,6 +38,9 @@ impl SharedGameData {
     pub fn new() -> Self{
         Self { 
             delta_time: 0.0,
+            gui_wins: BTreeMap::new(),
+            gui_open_request: BTreeSet::new(),
+            gui_close_request: BTreeSet::new(),
             sectors: vec![],
             entities: vec![]
         }
@@ -94,10 +100,29 @@ impl GameWindow for Nopileos {
         guii.open_guis.insert("menu_bar".to_string());
         guii.open_guis.insert("About".to_string());
         guii.open_guis.insert("Sector Map".to_string());
+
         return guii;
     }
 
-    fn update(&mut self, guii: GUIInterface) -> GUIInterface {
+    fn update(&mut self, mut guii: GUIInterface) -> GUIInterface {
+
+        self.shared_game_data.gui_wins = BTreeMap::new();
+        for gui in &self.gui_app.guis {
+            let is_open = self.gui_app.open.contains(gui.name());
+            self.shared_game_data.gui_wins.insert(gui.name().to_string(), is_open);
+        }
+
+        for gui in self.shared_game_data.gui_open_request.clone() {
+            let name = gui;
+            guii.open_guis.insert(name.to_string());
+            self.shared_game_data.gui_open_request.remove(&name);
+        }
+
+        for gui in self.shared_game_data.gui_close_request.clone() {
+            let name = gui;
+            guii.close_guis.insert(name.to_string());
+            self.shared_game_data.gui_close_request.remove(&name);
+        }
 
         let mut i = 0;
         for mut sec_e in self.shared_game_data.entities.clone() {
