@@ -1,7 +1,6 @@
-use std::any::Any;
 use std::collections::BTreeMap;
 
-use crate::common::atoany::AToAny;
+use crate::common::toany::ToAny;
 use crate::common::vector2::Vector2;
 use crate::wares::wares::Ware;
 use crate::position::Position;
@@ -14,7 +13,7 @@ pub enum EntityType {
     Station,
 }
 
-pub trait Entity: EntityClone + AToAny {
+pub trait Entity: EntityClone + ToAny {
     fn get_settings(&mut self) -> EntitySettings;
     fn set_settings(&mut self,settings: EntitySettings);
     fn get_storage(&mut self) -> EntityWareStorage;
@@ -79,14 +78,3 @@ impl Clone for Box<dyn Entity> {
         self.clone_box()
     }
 }
-
-// Any
-
-/*
-pub fn entity_as_any<'a, T: Entity>(e: &'a mut Box<dyn Entity>, value: T) -> &T {
-    let it: &dyn Any = e.as_any();
-    match it.downcast_ref::<T>() {
-        Some(i) => i,
-        None => panic!(),
-    }
-}*/

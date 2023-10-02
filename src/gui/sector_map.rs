@@ -2,7 +2,7 @@ use egui_plot::{Line, Plot, PlotPoints,LineStyle,Polygon, PlotBounds};
 use egui::{Color32,remap};
 use std::f64::consts::TAU;
 
-use crate::{engine::gui_windows::{GuiWindow,GuiView}, SharedGameData, common::{vector2::Vector2,triangle::Triangle}, galaxy::sector::Sector, entities::{entity::EntityType, command::EntityCommand}};
+use crate::{engine::gui_windows::{GuiWindow,GuiView}, SharedGameData, common::{vector2::Vector2,triangle::Triangle}, galaxy::sector::Sector, entities::entity::EntityType};
 
 pub struct SectorMap {
     sector : Sector,
@@ -124,29 +124,13 @@ impl GuiView for SectorMap {
                     if e.get_position().global_pos == self.selected_sector {
                         match e.get_settings().clone().e_type {
                             EntityType::Ship => {
-
-                                let rot:i32;
-                                match e.get_settings().e_handler.current_command {
-                                    EntityCommand::FlyToPos(pos) => {
-                                        if pos.global_pos == self.selected_sector {
-                                            rot = e.get_position().local_pos.look_at_rotation(pos.local_pos) - 90;
-                                        }
-                                        else {
-                                            rot = 0;
-                                        }
-                                    }
-                                    EntityCommand::Null => {
-                                        rot = 0;
-                                    }
-                                }
-
                                 plot_ui.polygon({
-                                    Polygon::new(PlotPoints::new(Triangle::new(e.get_position().local_pos, 1.0, rot).get_points()))
+                                    Polygon::new(PlotPoints::new(Triangle::new(e.get_position().local_pos, 1.0, 0).get_points()))
                                         .fill_color(Color32::BLUE)
                                         .style(LineStyle::Solid)
                                         .width(0.1)
                                         .name(e.get_settings().name)
-                                })
+                                });
                             }
                             EntityType::Station => {
                                 let points = PlotPoints::new(vec![
@@ -167,7 +151,7 @@ impl GuiView for SectorMap {
                                             .width(0.1)
                                             .name(e.get_settings().name)
                                     }
-                                )
+                                );
                             }
                         }
                     }

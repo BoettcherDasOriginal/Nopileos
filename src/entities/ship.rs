@@ -13,7 +13,7 @@ pub enum ShipType {
 #[derive(Clone, Debug)]
 pub struct Ship{
     settings: EntitySettings,
-    ship_type: ShipType,
+    pub ship_type: ShipType,
     storage: EntityWareStorage,
     position: Position,
 }
@@ -47,10 +47,6 @@ impl Entity for Ship {
 impl Ship {
     pub fn new(settings: EntitySettings,ship_type: ShipType,storage: EntityWareStorage,position: Position) -> Self{
         Self { settings: settings, ship_type: ship_type, storage: storage, position: position }
-    }
-
-    pub fn get_ship_type(&mut self) -> ShipType{
-        return self.ship_type.clone();
     }
 
     pub fn move_ship_local(&mut self, v: f64,target: Vector2,delta_time: f64) {

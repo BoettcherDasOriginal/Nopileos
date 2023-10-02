@@ -54,10 +54,15 @@ impl Vector2{
         return [self.x,self.y];
     }
 
+    // Todo => implement vector rotation
+    /*
     pub fn look_at_rotation(&mut self, target: Vector2) -> i32 {
-        let t = (target.clone() - self.clone()).x / (target - self.clone()).y;
+        let actual_target = target.clone() - self.clone();
+        let t = actual_target.y / actual_target.x;
+
         return (t.tan() * 180.0 / std::f64::consts::PI).round() as i32;
-    }
+
+    }*/
 
     pub fn in_quad_radius(&mut self, center: Vector2, radius: f64) -> bool {
         let min = center.clone() - Vector2::new(radius, radius);
