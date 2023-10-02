@@ -19,6 +19,10 @@ impl Entity for Station {
         return self.settings.clone();
     }
 
+    fn set_settings(&mut self,settings: EntitySettings) {
+        self.settings = settings;
+    }
+
     fn get_storage(&mut self) -> EntityWareStorage {
         return self.storage.clone();
     }

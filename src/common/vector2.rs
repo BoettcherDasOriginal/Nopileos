@@ -38,6 +38,13 @@ impl Div for Vector2 {
     }
 }
 
+impl PartialEq for Vector2 {
+    fn eq(&self, other: &Vector2) -> bool { 
+        self.x == other.x &&
+        self.y == other.y
+    }
+}
+
 impl Vector2{
     pub fn new(x: f64,y: f64) -> Self {
         Self { x: x, y: y }
@@ -45,5 +52,18 @@ impl Vector2{
 
     pub fn as_slice(&mut self) -> [f64; 2] {
         return [self.x,self.y];
+    }
+
+    pub fn look_at_rotation(&mut self, target: Vector2) -> i32 {
+        let t = (target.clone() - self.clone()).x / (target - self.clone()).y;
+        return (t.tan() * 180.0 / std::f64::consts::PI).round() as i32;
+    }
+
+    pub fn in_quad_radius(&mut self, center: Vector2, radius: f64) -> bool {
+        let min = center.clone() - Vector2::new(radius, radius);
+        let max = center + Vector2::new(radius, radius);
+
+        min.x < self.x && max.x > self.x &&
+        min.y < self.y && max.y > self.y
     }
 }

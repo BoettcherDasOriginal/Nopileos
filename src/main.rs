@@ -9,7 +9,9 @@ mod galaxy;
 use std::collections::BTreeMap;
 
 use egui::{Context,Color32};
+use entities::command::{EntityCommandHandler, EntityCommand};
 use entities::entity::Entity;
+use entities::ship::Ship;
 
 use crate::engine::game_window::run;
 use crate::engine::gui_windows::GUIInterface;
@@ -63,8 +65,17 @@ impl GameWindow for Nopileos {
     }
 
     fn start(&mut self, mut guii: GUIInterface) -> GUIInterface {
-        let ship = crate::entities::ship::Ship::new(EntitySettings::new("Gox".to_string(), "HXI-739".to_string(), false, "owner".to_string(), EntityType::Ship), crate::entities::ship::ShipType::SFighter, EntityWareStorage::new(BTreeMap::new(), 100.0), Position::new(0, Vector2::new(87.3345, 33.5)));
-        let station = crate::entities::station::Station::new(EntitySettings::new("Handelsstation".to_string(), "TLO-101".to_string(), false, "owner".to_string(), EntityType::Station), crate::entities::station::StationType::Station, EntityWareStorage::new(BTreeMap::new(), 100.0), Position::new(0, Vector2::new(100.0, 200.0)));
+        let ship_cmds = vec![
+            EntityCommand::FlyToPos(Position::new(0, Vector2::new(-100.0, 10.0))),
+            EntityCommand::FlyToPos(Position::new(0, Vector2::new(200.0, 200.0))),
+            EntityCommand::FlyToPos(Position::new(0, Vector2::new(0.0, 100.0))),
+        ];
+
+        let mut ship = crate::entities::ship::Ship::new(EntitySettings::new("Gox".to_string(), "HXI-739".to_string(), false, "owner".to_string(), EntityType::Ship, EntityCommandHandler::new(ship_cmds)), crate::entities::ship::ShipType::SFighter, EntityWareStorage::new(BTreeMap::new(), 100.0), Position::new(0, Vector2::new(0.0, 100.0)));
+        let station = crate::entities::station::Station::new(EntitySettings::new("Handelsstation".to_string(), "TLO-101".to_string(), false, "owner".to_string(), EntityType::Station, EntityCommandHandler::new(vec![])), crate::entities::station::StationType::Station, EntityWareStorage::new(BTreeMap::new(), 100.0), Position::new(0, Vector2::new(100.0, 200.0)));
+        let mut ship_set = ship.get_settings();
+        ship_set.e_handler.get_current_command();
+        ship.set_settings(ship_set);
         self.shared_game_data.entities.append(&mut vec![
             vec![Box::new(ship),Box::new(station)],
             vec![],
@@ -86,7 +97,55 @@ impl GameWindow for Nopileos {
         return guii;
     }
 
-    fn update(&mut self, guii: GUIInterface) -> GUIInterface{
+    fn update(&mut self, guii: GUIInterface) -> GUIInterface {
+
+        let mut i = 0;
+        for mut sec_e in self.shared_game_data.entities.clone() {
+
+            let mut j = 0;
+            for mut e in sec_e.clone() {
+                match e.get_settings().e_type {
+                    EntityType::Ship => {
+                        match e.get_settings().e_handler.current_command {
+                            EntityCommand::FlyToPos(mut pos) => {
+                                if pos.global_pos == e.get_position().global_pos {
+                                    if let Some(s) = e.as_any().downcast_ref::<Ship>() {
+                                        let mut ship = s.clone();
+
+                                        if !pos.local_pos.in_quad_radius(ship.get_position().local_pos, 0.1) {
+                                            ship.move_ship_local(10.0, pos.local_pos, self.shared_game_data.delta_time);
+                                        }
+                                        else {
+                                            ship.set_position(Position::new(pos.global_pos, pos.local_pos));
+                                            let mut h = ship.get_settings();
+                                            h.e_handler.get_next_command();
+                                            h.e_handler.get_current_command();
+                                            ship.set_settings(h);
+                                        }
+                                        e = Box::new(ship);
+                                    }
+                                }
+                            }
+                            EntityCommand::Null => {
+                                
+                            }
+                        }
+                    }
+                    EntityType::Station => {
+
+                    }
+                }
+
+                sec_e[j] = e;
+
+                j += 1;
+            }
+
+            self.shared_game_data.entities[i] = sec_e;
+
+            i += 1;
+        }
+
         return guii;
     }
     
