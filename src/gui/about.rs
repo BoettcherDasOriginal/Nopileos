@@ -35,16 +35,19 @@ impl GuiView for About {
     fn ui(&mut self, ui: &mut egui::Ui) {
         ui.heading("Nopileos");
         ui.horizontal_wrapped(|ui| {
-            ui.spacing_mut().item_spacing.x = 0.0;
-            ui.label("Nopileos is a game written in ");
-            if ui.hyperlink_to("Rust", "https://www.rust-lang.org/").clicked() { let _ = open::that("https://www.rust-lang.org/"); }
-            ui.label(" .");
+            ui.label("Nopileos is a science fiction economic simulation game that enables players to engage in trading, construct and manage space stations and fleets, and interact with various factions and their political dynamics. Begin as a humble trader and progress towards becoming the ruler of multiple sectors.");
+            
         });
 
         ui.add_space(12.0);
 
         ui.heading("Early Access");
-        ui.label("This game is currently in development!");
+        ui.horizontal_wrapped(|ui| {
+            ui.spacing_mut().item_spacing.x = 0.0;
+            ui.label("This game is written in ");
+            if ui.hyperlink_to("Rust", "https://www.rust-lang.org/").clicked() { let _ = open::that("https://www.rust-lang.org/"); }
+            ui.label(" and is currently in development!\nEnjoy ;)");
+        });
 
         ui.add_space(12.0); // ui.separator();
         ui.heading("Links");
