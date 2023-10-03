@@ -1,4 +1,5 @@
 use std::ops::{Add, Sub, Mul, Div};
+use std::fmt;
 
 #[derive(Clone, Debug)]
 pub struct Vector2{
@@ -42,6 +43,12 @@ impl PartialEq for Vector2 {
     fn eq(&self, other: &Vector2) -> bool { 
         self.x == other.x &&
         self.y == other.y
+    }
+}
+
+impl fmt::Display for Vector2 {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "x: {}, y: {}", self.x.round(), self.y.round())
     }
 }
 

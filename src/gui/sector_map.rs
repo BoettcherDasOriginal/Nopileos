@@ -194,7 +194,16 @@ impl GuiView for SectorMap {
                     for mut e in self.shared_data.entities[self.selected_sector.clone() as usize].clone() {
                         if e.get_position().global_pos == self.selected_sector {
                             if e.is_mouse_hovered(mouse_pos.clone(), 3.0) {
-                                println!("{}",e.get_settings().name)
+                                match e.get_settings().clone().e_type {
+                                    EntityType::Ship => {
+                                        self.shared_data.selected_ship_id = e.get_settings().uid.to_owned();
+                                        self.shared_data.gui_open_request.insert("Ship Inspector".to_string());
+                                    }
+                                    EntityType::Station => {
+                                        self.shared_data.selected_station_id = e.get_settings().uid.to_owned();
+                                        self.shared_data.gui_open_request.insert("Station Inspector".to_string());
+                                    }
+                                }
                             }
                         }
                     }

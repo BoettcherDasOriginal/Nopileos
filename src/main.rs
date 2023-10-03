@@ -30,6 +30,8 @@ pub struct SharedGameData {
     gui_wins: BTreeMap<String,bool>,
     gui_open_request: BTreeSet<String>,
     gui_close_request: BTreeSet<String>,
+    selected_station_id: String,
+    selected_ship_id: String,
     sectors: Vec<Sector>,
     entities: Vec<Vec<Box<dyn Entity>>>, // entities[sector_id] -> Vec<Box<dyn Entity>> in the given sector
 }
@@ -41,6 +43,8 @@ impl SharedGameData {
             gui_wins: BTreeMap::new(),
             gui_open_request: BTreeSet::new(),
             gui_close_request: BTreeSet::new(),
+            selected_station_id: "None".to_string(),
+            selected_ship_id: "None".to_string(),
             sectors: vec![],
             entities: vec![]
         }
@@ -77,8 +81,8 @@ impl GameWindow for Nopileos {
             EntityCommand::FlyToPos(Position::new(0, Vector2::new(0.0, 100.0))),
         ];
 
-        let mut ship = crate::entities::ship::Ship::new(EntitySettings::new("Gox".to_string(), "HXI-739".to_string(), false, "owner".to_string(), EntityType::Ship, EntityCommandHandler::new(ship_cmds)), crate::entities::ship::ShipType::SFighter, EntityWareStorage::new(BTreeMap::new(), 100.0), Position::new(0, Vector2::new(0.0, 100.0)));
-        let station = crate::entities::station::Station::new(EntitySettings::new("Handelsstation".to_string(), "TLO-101".to_string(), false, "owner".to_string(), EntityType::Station, EntityCommandHandler::new(vec![])), crate::entities::station::StationType::Station, EntityWareStorage::new(BTreeMap::new(), 100.0), Position::new(0, Vector2::new(100.0, 200.0)));
+        let mut ship = crate::entities::ship::Ship::new(EntitySettings::new("Gox".to_string(), "HXI-739".to_string(), false, "Civil".to_string(), EntityType::Ship, EntityCommandHandler::new(ship_cmds)), crate::entities::ship::ShipType::SFighter, EntityWareStorage::new(BTreeMap::new(), 100.0), Position::new(0, Vector2::new(0.0, 100.0)));
+        let station = crate::entities::station::Station::new(EntitySettings::new("Handelsstation".to_string(), "TLO-101".to_string(), false, "Civil".to_string(), EntityType::Station, EntityCommandHandler::new(vec![])), crate::entities::station::StationType::Station, EntityWareStorage::new(BTreeMap::new(), 100.0), Position::new(0, Vector2::new(100.0, 200.0)));
         let mut ship_set = ship.get_settings();
         ship_set.e_handler.get_current_command();
         ship.set_settings(ship_set);
@@ -96,6 +100,8 @@ impl GameWindow for Nopileos {
             //Windows
             Box::new(gui::about::About::default()),
             Box::new(gui::sector_map::SectorMap::default()),
+            Box::new(gui::station_inspector::StationInspector::default()),
+            Box::new(gui::ship_inspector::ShipInspector::default()),
         ]);
         guii.open_guis.insert("menu_bar".to_string());
         guii.open_guis.insert("About".to_string());
