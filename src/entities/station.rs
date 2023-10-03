@@ -3,7 +3,7 @@ use crate::position::Position;
 
 #[derive(Clone, Debug)]
 pub enum StationType {
-    Station,
+    Station, //Default, can do nothing
 }
 
 #[derive(Clone, Debug)]
@@ -44,9 +44,5 @@ impl Entity for Station {
 impl Station {
     pub fn new(settings: EntitySettings,station_type: StationType,storage: EntityWareStorage,position: Position) -> Self{
         Self { settings: settings, station_type: station_type, storage: storage, position: position }
-    }
-
-    fn get_station_type(&mut self) -> StationType{
-        return self.station_type.clone();
     }
 }

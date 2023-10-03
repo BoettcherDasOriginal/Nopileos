@@ -1,5 +1,3 @@
-use std::collections::BTreeMap;
-
 use crate::common::toany::ToAny;
 use crate::common::vector2::Vector2;
 use crate::wares::wares::Ware;
@@ -48,12 +46,12 @@ impl EntitySettings {
 
 #[derive(Clone, Debug)]
 pub struct EntityWareStorage{
-    storage: BTreeMap<Ware,i64>,
-    storage_space: f64,
+    pub storage: Vec<(Ware,i64)>,
+    pub storage_space: f64,
 }
 
 impl EntityWareStorage {
-    pub fn new(storage: BTreeMap<Ware,i64>, storage_space: f64) -> Self{
+    pub fn new(storage: Vec<(Ware,i64)>, storage_space: f64) -> Self{
         Self { storage: storage, storage_space: storage_space }
     }
 }

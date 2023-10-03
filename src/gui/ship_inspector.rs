@@ -1,6 +1,4 @@
-use std::collections::BTreeMap;
-
-use egui::RichText;
+use egui_extras::{TableBuilder, Column};
 
 use crate::{engine::gui_windows::{GuiWindow,GuiView}, SharedGameData, entities::{ship::Ship, entity::{EntitySettings, EntityType, EntityWareStorage, Entity}, command::EntityCommandHandler}, position::Position, common::vector2::Vector2};
 
@@ -14,7 +12,7 @@ impl Default for ShipInspector {
     fn default() -> Self {
         Self {  
             shared_data: SharedGameData::new(),
-            selected_ship: Ship::new(EntitySettings::new("None".to_string(), "None".to_string(), false, "None".to_string(), EntityType::Station, EntityCommandHandler::new(vec![])), crate::entities::ship::ShipType::SFighter, EntityWareStorage::new(BTreeMap::new(), 0.0), Position::new(0, Vector2::new(0.0, 0.0)),0.0),
+            selected_ship: Ship::new(EntitySettings::new("None".to_string(), "None".to_string(), false, "None".to_string(), EntityType::Station, EntityCommandHandler::new(vec![])), crate::entities::ship::ShipType::SFighter, EntityWareStorage::new(vec![], 0.0), Position::new(0, Vector2::new(0.0, 0.0)),0.0),
             selected_ship_id: "".to_string(),
         }
     }
@@ -66,21 +64,94 @@ impl GuiWindow for ShipInspector {
 
 impl GuiView for ShipInspector {
     fn ui(&mut self, ui: &mut egui::Ui) {
-        ui.horizontal(|ui| {
-            ui.vertical(|ui| {
-                ui.label(RichText::new("Name:").strong());
-                ui.label(RichText::new("ID:").strong());
-                ui.label(RichText::new("Owner:").strong());
-                ui.label(RichText::new("Sector:").strong());
-                ui.label(RichText::new("Position:").strong());
-            });
-            ui.vertical(|ui| {
-                ui.label(&self.selected_ship.get_settings().name);
-                ui.label(&self.selected_ship.get_settings().uid);
-                ui.label(&self.selected_ship.get_settings().owner);
-                ui.label(&self.shared_data.sectors.get(self.selected_ship.get_position().global_pos as usize).unwrap().name);
-                ui.label(&self.selected_ship.get_position().local_pos.to_string());
-            });
-        });
+        let mut used_storage_space = 0.0;
+        for w in self.selected_ship.get_storage().storage {
+            used_storage_space += w.0.storage_space * w.1 as f64;
+        }
+        
+        egui::ScrollArea::vertical()
+            .max_width(400.0)
+            .max_height(500.0)
+            .show(ui, |ui| {
+                ui.heading("Info");
+                ui.horizontal(|ui| {
+                    ui.vertical(|ui| {
+                        ui.label("Name:");
+                        ui.label("ID:");
+                        ui.label("Owner:");
+                        ui.label("Sector:");
+                        ui.label("Position:");
+                    });
+                    ui.vertical(|ui| {
+                        ui.label(&self.selected_ship.get_settings().name);
+                        ui.label(&self.selected_ship.get_settings().uid);
+                        ui.label(&self.selected_ship.get_settings().owner);
+                        ui.label(&self.shared_data.sectors.get(self.selected_ship.get_position().global_pos as usize).unwrap().name);
+                        ui.label(&self.selected_ship.get_position().local_pos.to_string());
+                    });
+                });
+
+                ui.add_space(12.0);
+                ui.heading("Storage");
+                ui.horizontal(|ui| {
+                    ui.vertical(|ui| {
+                        ui.label("Capacity:");
+                        ui.label("Used:");
+                    });
+                    ui.vertical(|ui| {
+                        ui.label(&self.selected_ship.get_storage().storage_space.to_string());
+                        let used_in_p = used_storage_space / self.selected_ship.get_storage().storage_space * 100.0;
+                        ui.label(used_in_p.to_string() + "%");
+                    });
+                });
+
+                ui.collapsing("Directory", |ui| {
+                    TableBuilder::new(ui)
+                        .striped(true)
+                        .resizable(false)
+                        .cell_layout(egui::Layout::left_to_right(egui::Align::Center))
+                        .column(Column::initial(50.0).range(25.0..=100.0))
+                        .column(Column::remainder())
+                        .column(Column::remainder())
+                        .column(Column::remainder())
+                        .header(20.0, |mut header| {
+                            header.col(|ui| {
+                                ui.strong("Ware");
+                            });
+                            header.col(|ui| {
+                                ui.strong("Amount");
+                            });
+                            header.col(|ui| {
+                                ui.strong("Type");
+                            });
+                            header.col(|ui| {
+                                ui.strong("Space");
+                            });
+                        })
+                        .body(|mut body| {
+                            for w in self.selected_ship.get_storage().storage {
+                                let ware = w.0;
+                                let amount = w.1;
+        
+                                body.row(20.0, |mut row| {
+                                    row.col(|ui|{
+                                        ui.label(ware.name);
+                                    });
+                                    row.col(|ui|{
+                                        ui.label(amount.to_string());
+                                    });
+                                    row.col(|ui|{
+                                        ui.label(ware.storage_type);
+                                    });
+                                    row.col(|ui|{
+                                        ui.label((amount as f64 * ware.storage_space).to_string());
+                                    });
+                                });
+                            }
+                        }
+                    );
+                });
+            }
+        );
     }
 }
