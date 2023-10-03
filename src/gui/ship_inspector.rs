@@ -14,7 +14,7 @@ impl Default for ShipInspector {
     fn default() -> Self {
         Self {  
             shared_data: SharedGameData::new(),
-            selected_ship: Ship::new(EntitySettings::new("None".to_string(), "None".to_string(), false, "None".to_string(), EntityType::Station, EntityCommandHandler::new(vec![])), crate::entities::ship::ShipType::SFighter, EntityWareStorage::new(BTreeMap::new(), 0.0), Position::new(0, Vector2::new(0.0, 0.0))),
+            selected_ship: Ship::new(EntitySettings::new("None".to_string(), "None".to_string(), false, "None".to_string(), EntityType::Station, EntityCommandHandler::new(vec![])), crate::entities::ship::ShipType::SFighter, EntityWareStorage::new(BTreeMap::new(), 0.0), Position::new(0, Vector2::new(0.0, 0.0)),0.0),
             selected_ship_id: "".to_string(),
         }
     }

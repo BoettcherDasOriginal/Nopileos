@@ -16,6 +16,7 @@ pub struct Ship{
     pub ship_type: ShipType,
     storage: EntityWareStorage,
     position: Position,
+    pub max_speed: f64,
 }
 
 impl Entity for Ship {
@@ -45,8 +46,8 @@ impl Entity for Ship {
 }
 
 impl Ship {
-    pub fn new(settings: EntitySettings,ship_type: ShipType,storage: EntityWareStorage,position: Position) -> Self{
-        Self { settings: settings, ship_type: ship_type, storage: storage, position: position }
+    pub fn new(settings: EntitySettings,ship_type: ShipType,storage: EntityWareStorage,position: Position, max_speed: f64) -> Self{
+        Self { settings: settings, ship_type: ship_type, storage: storage, position: position, max_speed: max_speed }
     }
 
     pub fn move_ship_local(&mut self, v: f64,target: Vector2,delta_time: f64) {

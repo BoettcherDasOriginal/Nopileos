@@ -81,7 +81,7 @@ impl GameWindow for Nopileos {
             EntityCommand::FlyToPos(Position::new(0, Vector2::new(0.0, 100.0))),
         ];
 
-        let mut ship = crate::entities::ship::Ship::new(EntitySettings::new("Gox".to_string(), "HXI-739".to_string(), false, "Civil".to_string(), EntityType::Ship, EntityCommandHandler::new(ship_cmds)), crate::entities::ship::ShipType::SFighter, EntityWareStorage::new(BTreeMap::new(), 100.0), Position::new(0, Vector2::new(0.0, 100.0)));
+        let mut ship = crate::entities::ship::Ship::new(EntitySettings::new("Gox".to_string(), "HXI-739".to_string(), false, "Civil".to_string(), EntityType::Ship, EntityCommandHandler::new(ship_cmds)), crate::entities::ship::ShipType::SFighter, EntityWareStorage::new(BTreeMap::new(), 100.0), Position::new(0, Vector2::new(0.0, 100.0)), 10.0);
         let station = crate::entities::station::Station::new(EntitySettings::new("Handelsstation".to_string(), "TLO-101".to_string(), false, "Civil".to_string(), EntityType::Station, EntityCommandHandler::new(vec![])), crate::entities::station::StationType::Station, EntityWareStorage::new(BTreeMap::new(), 100.0), Position::new(0, Vector2::new(100.0, 200.0)));
         let mut ship_set = ship.get_settings();
         ship_set.e_handler.get_current_command();
@@ -144,7 +144,7 @@ impl GameWindow for Nopileos {
                                         let mut ship = s.clone();
 
                                         if !pos.local_pos.in_quad_radius(ship.get_position().local_pos, 0.1) {
-                                            ship.move_ship_local(10.0, pos.local_pos, self.shared_game_data.delta_time);
+                                            ship.move_ship_local(ship.max_speed, pos.local_pos, self.shared_game_data.delta_time);
                                         }
                                         else {
                                             ship.set_position(Position::new(pos.global_pos, pos.local_pos));
