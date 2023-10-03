@@ -9,7 +9,7 @@ pub enum StationType {
 #[derive(Clone, Debug)]
 pub struct Station{
     settings: EntitySettings,
-    station_type: StationType,
+    pub station_type: StationType,
     storage: EntityWareStorage,
     position: Position,
 }

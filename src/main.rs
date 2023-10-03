@@ -87,7 +87,7 @@ impl GameWindow for Nopileos {
             (Ware::new("Graphen".to_string(), "Container".to_string(), 20.0, 50.0),100)
         ];
 
-        let mut ship = crate::entities::ship::Ship::new(EntitySettings::new("Gox".to_string(), "HXI-739".to_string(), false, "Civil".to_string(), EntityType::Ship, EntityCommandHandler::new(ship_cmds)), crate::entities::ship::ShipType::SFighter, EntityWareStorage::new(vec![], 100.0), Position::new(0, Vector2::new(0.0, 100.0)), 10.0);
+        let mut ship = crate::entities::ship::Ship::new(EntitySettings::new("Gox".to_string(), "HXI-739".to_string(), false, "Civil".to_string(), EntityType::Ship, EntityCommandHandler::new(ship_cmds)), crate::entities::ship::ShipType::S, EntityWareStorage::new(vec![], 100.0), Position::new(0, Vector2::new(0.0, 100.0)), 10.0);
         let station = crate::entities::station::Station::new(EntitySettings::new("Handelsstation".to_string(), "TLO-101".to_string(), false, "Civil".to_string(), EntityType::Station, EntityCommandHandler::new(vec![])), crate::entities::station::StationType::Station, EntityWareStorage::new(station_storage, 8000.0), Position::new(0, Vector2::new(100.0, 200.0)));
         let mut ship_set = ship.get_settings();
         ship_set.e_handler.get_current_command();

@@ -59,7 +59,7 @@ fn links(ui: &mut egui::Ui) {
     use egui::special_emojis::GITHUB;
     if ui.hyperlink_to(
         format!("{} source on GitHub", GITHUB),
-        "https://github.com/BoettcherDasOriginal/",
-    ).clicked() {let _ = open::that("https://github.com/BoettcherDasOriginal/");}
+        "https://github.com/BoettcherDasOriginal/Nopileos",
+    ).clicked() {let _ = open::that("https://github.com/BoettcherDasOriginal/Nopileos");}
     //ui.hyperlink_to("documentation", "");
 }

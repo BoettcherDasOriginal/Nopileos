@@ -4,10 +4,7 @@ use crate::position::Position;
 
 #[derive(Clone, Debug)]
 pub enum ShipType {
-    SFreighter,
-    SFighter,
-    MFreighter,
-    MFighter,
+    S,
 }
 
 #[derive(Clone, Debug)]
