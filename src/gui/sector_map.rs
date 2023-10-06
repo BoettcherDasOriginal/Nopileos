@@ -2,7 +2,7 @@ use egui_plot::{Line, Plot, PlotPoints,LineStyle,Polygon, PlotBounds};
 use egui::{Color32,remap};
 use std::f64::consts::TAU;
 
-use crate::{engine::gui_windows::{GuiWindow,GuiView}, SharedGameData, common::{vector2::Vector2,triangle::Triangle}, galaxy::sector::Sector, entities::entity::EntityType};
+use crate::{engine::gui_windows::{GuiWindow,GuiView}, SharedGameData, common::{vector2::Vector2,triangle::Triangle}, galaxy::sector::Sector, entities::{entity::EntityType, command::EntityCommand}};
 
 pub struct SectorMap {
     sector : Sector,
@@ -125,7 +125,16 @@ impl GuiView for SectorMap {
                         match e.get_settings().clone().e_type {
                             EntityType::Ship => {
                                 plot_ui.polygon({
-                                    Polygon::new(PlotPoints::new(Triangle::new(e.get_position().local_pos, 1.0, 0).get_points()))
+                                    let mut t = Triangle::new(e.get_position().local_pos, 1.0, 0);
+
+                                    match e.get_settings().e_handler.current_command {
+                                        EntityCommand::FlyToPos(pos) => {
+                                            t.add_rotation(e.get_position().local_pos.look_at_rotation(pos.local_pos));
+                                        }
+                                        EntityCommand::Null => {}
+                                    }
+
+                                    Polygon::new(PlotPoints::new(t.get_points()))
                                         .fill_color(Color32::BLUE)
                                         .style(LineStyle::Solid)
                                         .width(0.1)

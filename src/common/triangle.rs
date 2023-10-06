@@ -25,11 +25,10 @@ impl Triangle {
         }
         return triangle_points;
     }
-
-    /*
+    
     pub fn add_rotation(&mut self, r:i32){
         self.rotation = get_rotation(self.rotation, r);
-    }*/
+    }
 }
 
 fn get_rotation(start_r: i32,r:i32) -> i32 {
