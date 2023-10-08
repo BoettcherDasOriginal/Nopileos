@@ -3,7 +3,6 @@ mod gui;
 mod entities;
 mod wares;
 mod common;
-mod position;
 mod galaxy;
 mod player;
 
@@ -21,7 +20,7 @@ use crate::engine::gui_windows::GUIInterface;
 use crate::engine::game_window::GameWindow;
 use crate::engine::gui_windows::GuiWindows;
 
-use crate::{entities::entity::{EntityType, EntitySettings, EntityWareStorage},galaxy::sector::Sector, position::Position, common::vector2::Vector2};
+use crate::{entities::entity::{EntityType, EntitySettings, EntityWareStorage},galaxy::sector::Sector, common::{vector2::Vector2,position::Position}};
 
 fn main() {
     pollster::block_on(run(Nopileos::default()));

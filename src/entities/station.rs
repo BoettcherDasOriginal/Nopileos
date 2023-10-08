@@ -1,5 +1,5 @@
 use crate::entities::entity::{Entity,EntityWareStorage,EntitySettings};
-use crate::position::Position;
+use crate::common::position::Position;
 
 #[derive(Clone, Debug)]
 pub enum StationType {

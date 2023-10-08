@@ -1,7 +1,5 @@
-use crate::common::toany::ToAny;
-use crate::common::vector2::Vector2;
+use crate::common::{vector2::Vector2,position::Position,toany::ToAny};
 use crate::wares::wares::Ware;
-use crate::position::Position;
 
 use super::command::EntityCommandHandler;
 

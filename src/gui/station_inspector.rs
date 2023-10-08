@@ -1,6 +1,6 @@
 use egui_extras::{TableBuilder, Column};
 
-use crate::{engine::gui_windows::{GuiWindow,GuiView}, SharedGameData, entities::{station::Station, entity::{EntitySettings, EntityType, EntityWareStorage, Entity}, command::EntityCommandHandler}, position::Position, common::vector2::Vector2};
+use crate::{engine::gui_windows::{GuiWindow,GuiView}, SharedGameData, entities::{station::Station, entity::{EntitySettings, EntityType, EntityWareStorage, Entity}, command::EntityCommandHandler}, common::{vector2::Vector2,position::Position}};
 
 pub struct StationInspector {
     shared_data: SharedGameData,
