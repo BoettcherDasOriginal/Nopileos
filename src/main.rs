@@ -5,6 +5,7 @@ mod wares;
 mod common;
 mod position;
 mod galaxy;
+mod player;
 
 use std::collections::{BTreeMap, BTreeSet};
 
@@ -13,6 +14,7 @@ use entities::command::{EntityCommandHandler, EntityCommand};
 use entities::entity::Entity;
 use entities::ship::Ship;
 use wares::wares::Ware;
+use player::PlayerInfo;
 
 use crate::engine::game_window::run;
 use crate::engine::gui_windows::GUIInterface;
@@ -31,6 +33,8 @@ pub struct SharedGameData {
     gui_wins: BTreeMap<String,bool>,
     gui_open_request: BTreeSet<String>,
     gui_close_request: BTreeSet<String>,
+    player_info: PlayerInfo,
+    owner_codes: BTreeSet<String>,
     selected_station_id: String,
     selected_ship_id: String,
     sectors: Vec<Sector>,
@@ -44,6 +48,8 @@ impl SharedGameData {
             gui_wins: BTreeMap::new(),
             gui_open_request: BTreeSet::new(),
             gui_close_request: BTreeSet::new(),
+            player_info: PlayerInfo::new("Player".to_string(),"Player Inc.".to_string(),"player".to_string()),
+            owner_codes: BTreeSet::new(),
             selected_station_id: "None".to_string(),
             selected_ship_id: "None".to_string(),
             sectors: vec![],
@@ -88,17 +94,20 @@ impl GameWindow for Nopileos {
         ];
 
         let mut ship = crate::entities::ship::Ship::new(EntitySettings::new("Gox".to_string(), "HXI-739".to_string(), false, "Civil".to_string(), EntityType::Ship, EntityCommandHandler::new(ship_cmds)), crate::entities::ship::ShipType::S, EntityWareStorage::new(vec![], 100.0), Position::new(0, Vector2::new(0.0, 100.0)), 10.0);
+        let player_ship = crate::entities::ship::Ship::new(EntitySettings::new("Ship".to_string(), "XGN-836".to_string(), false, "player".to_string(), EntityType::Ship, EntityCommandHandler::new(vec![])), crate::entities::ship::ShipType::S, EntityWareStorage::new(vec![], 100.0), Position::new(0, Vector2::new(0.0, 200.0)), 10.0);
         let station = crate::entities::station::Station::new(EntitySettings::new("Handelsstation".to_string(), "TLO-101".to_string(), false, "Civil".to_string(), EntityType::Station, EntityCommandHandler::new(vec![])), crate::entities::station::StationType::Station, EntityWareStorage::new(station_storage, 8000.0), Position::new(0, Vector2::new(100.0, 200.0)));
         let mut ship_set = ship.get_settings();
         ship_set.e_handler.get_current_command();
         ship.set_settings(ship_set);
         self.shared_game_data.entities.append(&mut vec![
-            vec![Box::new(ship),Box::new(station)],
+            vec![Box::new(ship),Box::new(player_ship),Box::new(station)],
             vec![],
         ]);
 
         self.shared_game_data.sectors.append(& mut vec![Sector::new("Isaeuma Tlo'nep".to_string(),0, "Isaeuma IV".to_string(), 5.0, Color32::LIGHT_YELLOW, Color32::LIGHT_BLUE)]);
         self.shared_game_data.sectors.append(& mut vec![Sector::new("Isaeuma".to_string(),1, "Isaeuma I".to_string(), 15.0, Color32::LIGHT_RED, Color32::LIGHT_BLUE)]);
+
+        self.shared_game_data.owner_codes.insert("Civil".to_string());
 
         guii.add_guis.append(&mut vec![
             //MenuBars, etc -> must be before windows so they can't go on top
@@ -108,6 +117,8 @@ impl GameWindow for Nopileos {
             Box::new(gui::sector_map::SectorMap::default()),
             Box::new(gui::station_inspector::StationInspector::default()),
             Box::new(gui::ship_inspector::ShipInspector::default()),
+            Box::new(gui::ship_commander::ShipCommander::default()),
+            Box::new(gui::player_info::PlayerInfo::default()),
         ]);
         guii.open_guis.insert("menu_bar".to_string());
         guii.open_guis.insert("About".to_string());

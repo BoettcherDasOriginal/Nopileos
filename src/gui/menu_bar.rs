@@ -30,11 +30,7 @@ impl GuiWindow for MenuBar {
                     use GuiView as _;
                     self.ui(ui);
                 });
-
-
             });
-
-            ui.label(format!("delta_time: {:.1}ms",data.delta_time * 1000.0))
         });
 
         return self.shared_data.clone();
@@ -114,6 +110,8 @@ impl GuiView for MenuBar {
                     }
                 }
             });
+
+            ui.label(format!("{:.0} FPS",1.0 / self.shared_data.delta_time));
         });
 
         
